@@ -314,106 +314,6 @@ async def sauce_put(ctx, sauce, rating, tags, character = None, parody = None, t
         jsonn.write(json_data)
         await ctx.send(f"{sauce} stored sucessfully")
 
-'''
-@commands.guild_only()
-@bot.hybrid_command(name="imagine", description="Command to imagine an image")
-@app_commands.choices(sampler=[
-    app_commands.Choice(name='📏 Euler (Recommended)', value='Euler'),
-    app_commands.Choice(name='📏 Euler a', value='Euler a'),
-    app_commands.Choice(name='📐 Heun', value='Heun'),
-    app_commands.Choice(name='💥 DPM++ 2M Karras', value='DPM++ 2M Karras'),
-    app_commands.Choice(name='🔍 DDIM', value='DDIM'),
-    app_commands.Choice(name='📐DPM++ SDE Karras', value='DPM')
-])
-@app_commands.choices(model=[
-    app_commands.Choice(name='😭 Cute Yukii Mix for lolis,(by yasli)', value='CuteYukiMix'),
-    app_commands.Choice(name='🌈 Elldreth vivid mix (Landscapes, Stylized characters, nsfw)', value='ELLDRETHVIVIDMIX'),
-    app_commands.Choice(name='💪 Deliberate v2 (Anything you want, nsfw)', value='DELIBERATE'),
-    app_commands.Choice(name='🔮 Dreamshaper (HOLYSHIT this so good)', value='DREAMSHAPER_6'),
-    app_commands.Choice(name='🎼 Lyriel', value='LYRIEL_V16'),
-    app_commands.Choice(name='💥 Anything diffusion (Good for anime also not perfect)', value='ANYTHING_V4'),
-    app_commands.Choice(name='🌅 Openjourney (Midjourney alternative)', value='OPENJOURNEY'),
-    app_commands.Choice(name='🏞️ Realistic (Lifelike pictures)', value='REALISTICVS_V20'),
-    app_commands.Choice(name='👨‍🎨 Portrait (For headshots I guess)', value='PORTRAIT'),
-    app_commands.Choice(name='🌟 Rev animated (Illustration, Anime)', value='REV_ANIMATED'),
-    app_commands.Choice(name='😏 Anything V5 >:)', value='ANYTHING_V5'),
-    app_commands.Choice(name='🌌 AbyssOrangeMix', value='ABYSSORANGEMIX'),
-    app_commands.Choice(name='🌌 ABSOLUTE Reality v181', value='ABSOLUTE_REALITY'),
-    app_commands.Choice(name='🌌 Dreamlike v2', value='DREAMLIKE_V2'),
-    app_commands.Choice(name='🌌 Dreamshaper 5', value='DREAMSHAPER_5'),
-    app_commands.Choice(name='🌌 MechaMix', value='MECHAMIX'),
-    app_commands.Choice(name='💥 Anything V3', value='ANYTHING_V3'),
-    app_commands.Choice(name='🔮 Dreamshaper 8', value='Dreamshaper_8'),
-    app_commands.Choice(name='🌌 Stable Diffusion v15', value='SD_V15'),
-    app_commands.Choice(name="🌌 Shonin's Beautiful People", value='SBP'),
-    app_commands.Choice(name="🌌 TheAlly's Mix II", value='THEALLYSMIX'),
-    app_commands.Choice(name='🌌 Timeless', value='TIMELESS'),
-    app_commands.Choice(name="Dreamlike anime??", value="DREAMLIKE_ANIME"),
-    app_commands.Choice(name="EimisAnimeDiffusion :0", value="EAD")
-])
-
-@app_commands.describe(
-    prompt="Write a amazing prompt for a image",
-    model="Model to generate image",
-    sampler="Sampler for denosing",
-    negative="Prompt that specifies what you do not want the model to generate",
-    num_images="number of images",
-)
-@commands.guild_only()
-async def imagine(ctx, prompt: str, model: app_commands.Choice[str], sampler: app_commands.Choice[str], num_images : int = 1, negative: str = None, seed: int = None):
-    for word in prompt.split():
-        if word in blacklisted_words:
-            is_nsfw = True
-        else:
-            is_nsfw = False
-    if seed is None:
-        seed = random.randint(10000, 99999)
-
-    await ctx.defer()
-
-    model_uid = Model[model.value].value[0]
-
-    if num_images > 10:
-        num_images = 10
-
-    tasks = []
-    async with aiohttp.ClientSession():
-        while len(tasks) < num_images:
-            fork = generate_image_prodia(prompt, model_uid, sampler.value, seed+(len(tasks)-1), negative)
-            task = asyncio.ensure_future(fork)
-            tasks.append(task)
-
-        generated_images = await asyncio.gather(*tasks)
-        for var69 in generated_images:
-            image = Image.open(var69)
-    files = []
-    for index, image in enumerate(generated_images):
-        if is_nsfw:
-            img_file = discord.File(image, filename=f"image_{seed+index}.png", spoiler=True, description=prompt)
-        else:
-            img_file = discord.File(image, filename=f"image_{seed+index}.png", description=prompt)
-            files.append(img_file)
-    if is_nsfw:
-        prompt = f"||{prompt}||"
-        embed = discord.Embed(color=0xFF0000)
-        embed.add_field(name='🔞 NSFW', value=f'🔞 {str(is_nsfw)}', inline=True)
-    else:
-        embed = discord.Embed(color=discord.Color.random())
-
-    embed.title = f"🎨Generated Image by {ctx.author.display_name}"
-    embed.add_field(name='📝 Prompt', value=f'- {prompt}', inline=False)
-    if negative is not None:
-        embed.add_field(name='📝 Negative Prompt', value=f'- {negative}', inline=False)
-    embed.add_field(name='🤖 Model', value=f'- {model.value}', inline=True)
-    embed.add_field(name='� Sampler', value=f'- {sampler.value}', inline=True)
-    embed.add_field(name='🌱 Seed', value=f'- {str(seed)}', inline=True)
-    embed.add_field(name='', value="Im not doing your jailtime 🥵", inline=True)
-
-    if is_nsfw:
-        embed.add_field(name='🔞 NSFW', value=f'- {str(is_nsfw)}', inline=True)
-    await ctx.send(embed=embed, files=files)
-'''
-
 @app_commands.describe(
      prompt="make bot say something",
      size="Choose the size of the image"
@@ -433,18 +333,6 @@ async def dall_e_3(ctx, prompt):
     for imagefileobj in imagefileobjs:
         file = discord.File(imagefileobj, filename="image.png", spoiler=True, description=prompt)
         await ctx.send(file=file)
-
-'''
-@bot.hybrid_command(name='dalle_3', description='dalle-3')
-@commands.guild_only()
-async def dall3_3(ctx, prompt):
-    model = 'dall-e-3'
-    imagefileobjs = await dall_e_3(model, prompt)
-    await ctx.send(f'🎨 Generated Image by {ctx.author.name} using {model}')
-    for imagefileobj in imagefileobjs:
-        file = discord.File(imagefileobj, filename="image.png", spoiler=True, description=prompt)
-        await ctx.send(file=file)
-'''
 
 @bot.hybrid_command(name="imagine-dalle", description="Create images using amazing Ai models")
 @commands.guild_only()
