@@ -13,7 +13,7 @@ from discord import Embed, app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
 from bot_utilities.youtubedl import thefunc, bash_command
-from bot_utilities.ai_utils import generate_response, generate_image_prodia, search, poly_image_gen, dall_e_gen, dall_e_3, fetch_chat_models, tenor, flux_gen, llama_vision, dalle3, g4f_fetch_chat_models, flux_sch, anythingxl, ai_hoshino
+from bot_utilities.ai_utils import generate_response, generate_image_prodia, search, poly_image_gen, dall_e_gen, dall_e_3, fetch_chat_models, tenor, flux_gen, llama_vision, dalle3, g4f_fetch_chat_models, flux_sch, anythingxl, ai_hoshino, gpt4
 from bot_utilities.response_util import split_response, translate_to_en, get_random_prompt
 from bot_utilities.discord_util import check_token, get_discord_token
 from bot_utilities.config_loader import config, load_current_language, load_instructions
@@ -64,8 +64,6 @@ load_instructions(instruction)
 
 CHIMERA_GPT_KEY = children.getenv('CHIMERA_GPT_KEY')
 
-
-
 @bot.event
 async def on_ready():
     await bot.tree.sync()
@@ -108,8 +106,6 @@ personaname = config['INSTRUCTIONS'].title()
 replied_messages = {}
 active_channels = {}
 g4f_history = {}
-
-
 
 @bot.event
 async def on_message(message):
@@ -282,7 +278,6 @@ async def sauce_show(ctx, sauce = None):
         await ctx.send(acher)
         return
 
-
 @commands.guild_only()
 @bot.hybrid_command(name="sauce-put", description="nh*ntai command to store sauses")
 async def sauce_put(ctx, sauce, rating, tags, character = None, parody = None, title = None):
@@ -374,7 +369,7 @@ async def hoshino(ctx, prompt):
 @bot.hybrid_command(name="flux", description="generate images using flux")
 async def flux(ctx, prompt):
     await ctx.defer()
-    imagefile =await flux_gen(prompts=prompt)
+    imagefile = await flux_gen(prompts=prompt)
     await ctx.send(f'🎨 Generated Image by {ctx.author.name} prompt {prompt}')
     file = discord.File(imagefile, filename="image.png", spoiler=True, description=prompt)
     sent_message =  await ctx.send(file=file)
@@ -387,8 +382,6 @@ async def debug(ctx, text):
     for char in text:
         message = await message.edit(content=message.content + char[10])
         await asyncio.sleep(0.00009)
-
-
 
 @app_commands.describe(
      prompt="make bot say something",
@@ -413,7 +406,6 @@ async def binarytoip(ctx, bin1, bin2, bin3, bin4):
 
 @commands.guild_only()
 @bot.hybrid_command(name="ytmp3", description="ccc")
-
 
 @app_commands.describe(
     link="video link",
@@ -468,7 +460,6 @@ async def newgrounds(ctx, link, title = None):
     await asyncio.sleep(8)
     await szissor.delete()
 
-
 @bot.hybrid_command(name="changeusr", description=current_language["changeusr"])
 @commands.is_owner()
 async def changeusr(ctx, new_username):
@@ -509,7 +500,8 @@ async def gif(ctx, category, helpp = None, anime = None):
         if not results:
             await ctx.channel.send("No image found.")
             return
-        image_url = results[0].get("url")                                                               
+        image_url = results[0].get("url")
+
         embed = Embed(colour=0x141414)
         embed.set_image(url=image_url)
         await ctx.send(embed=embed)
@@ -519,7 +511,7 @@ async def gif(ctx, category, helpp = None, anime = None):
 #    url = f"https://api.otakugifs.xyz/gif?reaction={category}"
 
     url = base_url + category
-                                                     
+
     async with aiohttp.ClientSession() as session:
        async with session.get(url) as response:
            if response.status != 200:
@@ -549,7 +541,7 @@ async def close(ctx):
 @bot.hybrid_command(name="pfp", description=current_language["pfp"])
 @commands.is_owner()
 async def pfp(ctx, attachment: discord.Attachment):
-    await ctx.defer()                                                                                   
+    await ctx.defer()
     if not attachment.content_type.startswith('image/'):
         await ctx.send("Please upload an image file.")
         return
@@ -649,6 +641,35 @@ async def yt_music(ctx, yt_link, file_name : str = "audio"):
     await ctx.send(file=file)
     asyncio.sleep(7)
     children.system("rm -rvf ./temp/*")
+
+
+
+@bot.hybrid_command(name="chatvs", description="Ask gptv a question")
+async def chatvs(ctx, prompt: str, image: discord.Attachment = None):
+    await ctx.defer()
+
+    key = f"{ctx.author.id}-{ctx.channel.id}"
+    if key not in message_history:
+        message_history[key] = []
+
+    message_history[key] = message_history[key][-MAX_HISTORY:]
+
+
+    #await ctx.defer()
+    image_bytes = await image.read()
+    message_history[key].append({"role": "user", "content": f'{prompt}'})
+    history = message_history[key]
+
+    base64_image = base64.b64encode(image_bytes).decode('utf-8')
+    await ctx.send(image)
+
+    async with ctx.channel.typing():
+        response = await gpt4(prompt=prompt, image=base64_image, history=history, instructions=instructions)
+        for chunk in split_response(response):
+            await ctx.send(chunk)
+            message_history[key].append({"role": "assistant", "name": personaname, "content": chunk})
+
+
 
 
 @bot.hybrid_command(name="chat", description="Ask gemini a question")
