@@ -445,7 +445,6 @@ async def ytmp3(ctx, link, mtitle, artist, album, year, track, genre):
         # Delete the downloaded file
         children.remove(f"output.m4a")
         children.remove(f"output.mp3")
-#        await ctx.send(f'MP3 file sent and removed from the server.')
 
 @bot.hybrid_command(name="newgrounds", description="downloads a audio on newgrounds and from soundcloud ;)")
 async def newgrounds(ctx, link, title = None):
