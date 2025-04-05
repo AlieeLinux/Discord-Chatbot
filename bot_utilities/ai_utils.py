@@ -314,6 +314,31 @@ async def generate_image_prodia(prompt, model, sampler, seed, neg):
                         print(f"\033[1;34m(Avernus) Finished image creation\n\033[0mJob id : {job_id}  Prompt : ", prompt, "in", duration, "seconds.")
                         return img_file_obj
 
+async def gpt4(prompt, image, history, instructions):
+    """gpt4 visionary"""
+    response = await client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "name": "instructions", "content": instructions},
+            *history,
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt},
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{image}",
+                        }
+                    },
+                ],
+            }
+        ],
+    )
+
+    message = response.choices[0].message.content
+    return message
+
 
 
 async def llama_vision(prompt, image):
