@@ -5,7 +5,7 @@ MAX_SEARCH_RESULTS: 6
 ALLOW_DM: true # Set to true to allow direct messages
 SMART_MENTION: true # Set to true to enable smart mention feature
 
-GPT_MODEL: gpt-4o-mini # you can use other models listed upon run
+GPT_MODEL: gpt-4o # you can use other models listed upon run
 G4F_MODEL: hermes-3 # you can use other models g4f uses
 # use hermes-3 for expli/cit convo
 # use mistral-nemo for helpful things
