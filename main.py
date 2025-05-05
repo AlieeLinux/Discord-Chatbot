@@ -634,12 +634,11 @@ async def helpc(ctx):
 @bot.hybrid_command(name="yt-music", description="convert your favouirite somng on yt")
 async def yt_music(ctx, yt_link, file_name : str = "audio"):
     await ctx.defer()
+    children.system("rm -rvf ./temp/*")
     await thefunc(link=yt_link, music_name=file_name)
     await ctx.send(f"{yt_link} success")
-    file = discord.File(f'./temp/{file_name}.mp3')
+    file = discord.File(f'./temp/{file_name}.opus')
     await ctx.send(file=file)
-    asyncio.sleep(7)
-    children.system("rm -rvf ./temp/*")
 
 
 
